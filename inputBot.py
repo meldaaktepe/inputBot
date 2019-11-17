@@ -255,17 +255,18 @@ def lesseonParse(fileName, tearm):
 
         # if day is weakend or building is empty or room is empty or building of campus
         # or beginning time is empty or ending time is empty dont added to the list
-        if ((Building != "Null" or Building != "KCC" or Building != "UC")
-                and (Room != "Null" or Room != "G013-14" or Room != "CAFE")
-                and dayS != "S" and beginTime != "Null" and endTime != "Null"
-                and subjCode !="CIP" and Building + Room not in studiAndLab) :
+
+        if dayS != "S" and (Building != "Null" and Building != "KCC" and Building != "UC"
+                and Room != "Null" and Room != "G013-14" and Room != "CAFE"
+                and beginTime != "Null" and endTime != "Null"
+                and subjCode !="CIP" and (Building + Room) not in studiAndLab) :
             createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, beginTime, endTime, doubleCoded, PROP, requsite_class)
 
-        elif ((Building == "Null" or Building == "KCC" or Building == "UC")
-                and (Room == "Null" or Room == "G013-14" or Room == "CAFE")
-                and dayS == "S" and beginTime == "Null" and endTime == "Null"
-                and subjCode == "CIP" and Building + Room in studiAndLab) :
-            if Building + Room in studiAndLab :
+        elif dayS == "S" or ((Building == "Null" or Building == "KCC" or Building == "UC")
+                or (Room == "Null" or Room == "G013-14" or Room == "CAFE")
+                 or beginTime == "Null" or endTime == "Null"
+                or subjCode == "CIP" or (Building + Room) in studiAndLab) :
+            if (Building + Room) in studiAndLab :
                 print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
                       "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime,
                       "in", studiAndLab[Building + Room])
@@ -413,20 +414,28 @@ def findclass(courseProps, clas, course):
    # print("findclass says hi")
     for k in classroomList:
         classprops = k.getClassFeatures()
-
-        if courseProps != "":
-            numerOfProps = len(courseProps)
-            count = 0
-            for props in courseProps:
-                if props in classprops :
-                    if classprops[props] == True:
-                        count += 1
-                else:
-                    print("Course,",course.getCrnList()[0].getSubjName(), "course Prop:", props, " does not exist in Classroom props in classromm", k.getClassName())
-            if count == numerOfProps:
+        requsite_class = course.getclas()
+        if requsite_class == "":
+            if courseProps != "":
+                numerOfProps = len(courseProps)
+                count = 0
+                for props in courseProps:
+                    if props in classprops :
+                        if classprops[props] == True:
+                            count += 1
+                    else:
+                        print("Course,",course.getCrnList()[0].getSubjName(), "course Prop:", props, " does not exist in Classroom props in classromm", k.getClassName())
+                if count == numerOfProps:
+                    clas[classroomList.index(k)] = 1
+                else :
+                    print("Course,",course.getCrnList()[0].getSubjName(), "asks for:", str(courseProps) + ". However classroom:", k.getClassName(), "doesn't have these properties.")
+            else:  #if courseprops == "Null":\
                 clas[classroomList.index(k)] = 1
-        else: # if courseprops == "Null":
-            clas[classroomList.index(k)] = 1
+        else: #if  requsite_class != "":
+            for clasess in requsite_class:
+                if clasess == k.getClassName():
+                    clas[classroomList.index(k)] = 1
+
     return clas
 
 def makeAitAndCij (term) :
