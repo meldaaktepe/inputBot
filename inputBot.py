@@ -18,6 +18,8 @@ crn2Course = {}
 courseCapacity = {}
 studiAndLab = {}
 
+requsite_classdic = {}
+
 '#For UI'
 'Something here'
 
@@ -260,8 +262,10 @@ def lesseonParse(fileName, tearm):
                 and Room != "Null" and Room != "G013-14" and Room != "CAFE"
                 and beginTime != "Null" and endTime != "Null"
                 and subjCode !="CIP" and (Building + Room) not in studiAndLab) :
+            if "FRT" in requsite_class or "FR" in requsite_class:
+                requsite_classdic[subjectName] = (Building + Room)
             createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, beginTime, endTime, doubleCoded, PROP, requsite_class)
-
+'''
         elif dayS == "S" or ((Building == "Null" or Building == "KCC" or Building == "UC")
                 or (Room == "Null" or Room == "G013-14" or Room == "CAFE")
                  or beginTime == "Null" or endTime == "Null"
@@ -273,6 +277,7 @@ def lesseonParse(fileName, tearm):
             else :
                 print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
                   "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime)
+            '''
 
 def classroomParse(file):
 
@@ -411,7 +416,7 @@ def statistic() :
         print("classroom:", sumclass)
 
 def findclass(courseProps, clas, course):
-   # print("findclass says hi")
+    #print("findclass says hi")
     for k in classroomList:
         classprops = k.getClassFeatures()
         requsite_class = course.getclas()
@@ -432,9 +437,16 @@ def findclass(courseProps, clas, course):
             else:  #if courseprops == "Null":\
                 clas[classroomList.index(k)] = 1
         else: #if  requsite_class != "":
-            for clasess in requsite_class:
+            coursenamelist = []
+            for i in course.getCrnList():
+                coursenamelist.append((i.getSubjName()))
+            for lessonname in coursenamelist:
+                if lessonname in requsite_classdic:
+                    if requsite_classdic[lessonname] == k.getClassName():
+                        clas[classroomList.index(k)] = 1
+            '''for clasess in requsite_class:
                 if clasess == k.getClassName():
-                    clas[classroomList.index(k)] = 1
+                    clas[classroomList.index(k)] = 1'''
 
     return clas
 
