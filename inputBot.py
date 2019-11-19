@@ -265,7 +265,7 @@ def lesseonParse(fileName, tearm):
             if "FRT" in requsite_class or "FR" in requsite_class:
                 requsite_classdic[subjectName] = (Building + Room)
             createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, beginTime, endTime, doubleCoded, PROP, requsite_class)
-'''
+
         elif dayS == "S" or ((Building == "Null" or Building == "KCC" or Building == "UC")
                 or (Room == "Null" or Room == "G013-14" or Room == "CAFE")
                  or beginTime == "Null" or endTime == "Null"
@@ -277,7 +277,7 @@ def lesseonParse(fileName, tearm):
             else :
                 print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
                   "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime)
-            '''
+
 
 def classroomParse(file):
 
@@ -319,6 +319,7 @@ def classroomParse(file):
                 classroomList.append(classroomInfos)
         else:
             studiAndLab[building + room] = type
+            courseCapacity[classRoom] = capacity
 
 def printAll() :
     # Print full courselist
@@ -420,22 +421,24 @@ def findclass(courseProps, clas, course):
     for k in classroomList:
         classprops = k.getClassFeatures()
         requsite_class = course.getclas()
-        if requsite_class == "":
+        if requsite_class == "" or "FT" in requsite_class :
             if courseProps != "":
                 numerOfProps = len(courseProps)
-                count = 0
+                count, classcount = 0, 0
                 for props in courseProps:
                     if props in classprops :
                         if classprops[props] == True:
+                            clas[classroomList.index(k)] = 1
                             count += 1
+                        elif classprops[props] == False:
+                            print("Course,",course.getCrnList()[0].getSubjName(), "course Prop:", props, " does not exist in Classroom props in classromm", k.getClassName())
                     else:
-                        print("Course,",course.getCrnList()[0].getSubjName(), "course Prop:", props, " does not exist in Classroom props in classromm", k.getClassName())
+                        print("Course,", course.getCrnList()[0].getSubjName(), "asks for:", str(courseProps) + ". However classroom:", k.getClassName(), "doesn't have these properties.")
                 if count == numerOfProps:
                     clas[classroomList.index(k)] = 1
-                else :
-                    print("Course,",course.getCrnList()[0].getSubjName(), "asks for:", str(courseProps) + ". However classroom:", k.getClassName(), "doesn't have these properties.")
-            else:  #if courseprops == "Null":\
+            else: #if courseprops == "Null":
                 clas[classroomList.index(k)] = 1
+
         else: #if  requsite_class != "":
             coursenamelist = []
             for i in course.getCrnList():
@@ -444,9 +447,6 @@ def findclass(courseProps, clas, course):
                 if lessonname in requsite_classdic:
                     if requsite_classdic[lessonname] == k.getClassName():
                         clas[classroomList.index(k)] = 1
-            '''for clasess in requsite_class:
-                if clasess == k.getClassName():
-                    clas[classroomList.index(k)] = 1'''
 
     return clas
 
@@ -736,7 +736,7 @@ def solutions() :
 
 def classparse(file) :
     print(file.columns)
-    print("ssubj", file.çloc[0])
+    print("ssubj", file.loc[0])
 
 
 #Main function
@@ -786,9 +786,9 @@ courseList.clear()
 doubleCode2Course.clear()
 lesseonParse("term201701.csv", "201901")
 makeAitAndCij("201901")
+print(len(courseList))
 
-
-#objectifFunction("201701")
+objectifFunction("201901")
 #solutions()
 '''
 term201702.to_csv("term201702.csv", header = False, index = False)
