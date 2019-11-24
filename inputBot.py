@@ -209,51 +209,52 @@ def lesseonParse(fileName, tearm):
                     or beginTime == 1300 or beginTime == 1400 or beginTime == 1500 or beginTime == 1600
                     or beginTime == 1700 or beginTime == 1800 or beginTime == 1900 or beginTime == 2000
                     or beginTime == 2100 or beginTime == 2200 or beginTime == 2300):
-                print("In", tearm, "Course Name :", subjectName, "starts at", beginTime)
+                #print("In", tearm, "Course Name :", subjectName, "starts at", beginTime)
                 beginTime = beginTime - 60
-                print(", we asume that will start at", beginTime)
+                #print(", we asume that will start at", beginTime)
 
             elif (beginTime == 930 or beginTime == 1030 or beginTime == 1130 or beginTime == 1230
                   or beginTime == 1330 or beginTime == 1430 or beginTime == 1530 or beginTime == 1630
                   or beginTime == 1730 or beginTime == 1830 or beginTime == 1930 or beginTime == 2030
                   or beginTime == 2130 or beginTime == 2230) :
-                print("In", tearm, "Course Name :", subjectName, "starts at", beginTime)
+                #print("In", tearm, "Course Name :", subjectName, "starts at", beginTime)
                 beginTime = beginTime + 10
-                print(", we asume that will start at", beginTime)
+                #print(", we asume that will start at", beginTime)
 
             elif (beginTime == 950 or beginTime == 1050 or beginTime == 1150 or beginTime == 1250
                   or beginTime == 1350 or beginTime == 1450 or beginTime == 1550 or beginTime == 1650
                   or beginTime == 1750 or beginTime == 1850 or beginTime == 1950 or beginTime == 2050
                   or beginTime == 2150 or beginTime == 2250) :
-                print("In", tearm, "Course Name :", subjectName, "starts at", beginTime)
+                #print("In", tearm, "Course Name :", subjectName, "starts at", beginTime)
                 beginTime = beginTime - 10
-                print(", we asume that will start at", beginTime)
+                #print(", we asume that will start at", beginTime)
 
             if (endTime == 900 or endTime == 1000 or endTime == 1100 or endTime == 1200
                     or endTime == 1300 or endTime == 1400 or endTime == 1500 or endTime == 1600
                     or endTime == 1700 or endTime == 1800 or endTime == 1900 or endTime == 2000
                     or endTime == 2100 or endTime == 2200 or endTime == 2300):
-                print("In", tearm, "Course Name :", subjectName, "ends at", endTime)
+                #print("In", tearm, "Course Name :", subjectName, "ends at", endTime)
                 endTime = endTime + 30
-                print(", we asume that will ends at", endTime)
+                #print(", we asume that will ends at", endTime)
 
             elif (endTime == 950 or endTime == 1050 or endTime == 1150 or endTime == 1250
                     or endTime == 1350 or endTime == 1450 or endTime == 1550 or endTime == 1650
                     or endTime == 1750 or endTime == 1850 or endTime == 1950 or endTime == 2050
                     or endTime == 2150 or endTime == 2250 or endTime == 2350):
-                print("In", tearm, "Course Name :", subjectName, "ends at", endTime)
+                #print("In", tearm, "Course Name :", subjectName, "ends at", endTime)
                 endTime = endTime + 40
-                print(", we asume that will ends at", endTime)
+                #print(", we asume that will ends at", endTime)
             elif (endTime == 940 or endTime == 1040 or endTime == 1140 or endTime == 1240
                   or endTime == 1340 or endTime == 1440 or endTime == 1540 or endTime == 1640
                   or endTime == 1740 or endTime == 1840 or endTime == 1940 or endTime == 2040
                   or endTime == 2140 or endTime == 2240 or endTime == 2340):
-                print("In", tearm, "Course Name :", subjectName, "ends at", endTime)
+                #print("In", tearm, "Course Name :", subjectName, "ends at", endTime)
                 endTime = endTime - 10
-                print(", we asume that will ends at", endTime)
+                #print(", we asume that will ends at", endTime)
 
         else :
-            print("In", tearm, "Course Name :", subjectName, "starts at", beginTime, ", ends at", endTime)
+            alfa=0
+                #print("In", tearm, "Course Name :", subjectName, "starts at", beginTime, ", ends at", endTime)
 
         # if day is weakend or building is empty or room is empty or building of campus
         # or beginning time is empty or ending time is empty dont added to the list
@@ -271,13 +272,11 @@ def lesseonParse(fileName, tearm):
                  or beginTime == "Null" or endTime == "Null"
                 or subjCode == "CIP" or (Building + Room) in studiAndLab) :
             if (Building + Room) in studiAndLab :
-                print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
-                      "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime,
-                      "in", studiAndLab[Building + Room])
+                #print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,"in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime, "in", studiAndLab[Building + Room])
+                alfa=7
             else :
-                print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
-                  "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime)
-
+                #print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,"in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime)
+                alfa=7
 
 def classroomParse(file):
 
@@ -326,16 +325,20 @@ def printAll() :
     for i in courseList :
         crnList = i.getCrnList()
         meetinglist = i.getMeetingList()
-        print("Lesson :")
+        #print("Lesson :")
         for j in crnList:
-            print(j.getSubjName())
-        print("Meeting :")
+            alfa = 0
+            #print(j.getSubjName())
+            #print("Meeting :")
+
         for k in meetinglist:
-            print("k Meeting:", ":", k.getBuilding() , ",",k.getRoom() ,",",k.getDay() ,",",k.getBeginTime() , ",",k.getEndTime())
+    #print("k Meeting:", ":", k.getBuilding() , ",",k.getRoom() ,",",k.getDay() ,",",k.getBeginTime() , ",",k.getEndTime())
     #pint ClassRoomLİst
-    print("ClassRoomList:")
+    #print("ClassRoomList:")
+            alfa=0
     for i in classroomList  :
-        print("ClassRoom :", i.getClassBuilding() , ",",i.getClassRoom(), i.getClassCapacity())
+        alfa = 0
+       #print("ClassRoom :", i.getClassBuilding() , ",",i.getClassRoom(), i.getClassCapacity())
 
 def statistic() :
 
@@ -357,13 +360,13 @@ def statistic() :
             count201and300 += 1
         elif 301 < classroomCapacity < 400:
             new += 1
-    print("capacities:", set(arr))
-    print("Number of classrooms capasities between 0 and 50:", count0and50)
-    print("Number of classrooms capasities between 51 and 100:", count51and100)
-    print("Number of classrooms capasities between 101 and 200:", count100and200)
-    print("Number of classrooms capasities between 201 and 300:", count201and300)
-    print("Number of classrooms capasities between 301 and 400:", new)
-    print("Total number of classrooms:", count0and50 + count51and100 + count100and200 + count201and300 + new)
+    #print("capacities:", set(arr))
+    #print("Number of classrooms capasities between 0 and 50:", count0and50)
+    #print("Number of classrooms capasities between 51 and 100:", count51and100)
+    #print("Number of classrooms capasities between 101 and 200:", count100and200)
+    #print("Number of classrooms capasities between 201 and 300:", count201and300)
+    #print("Number of classrooms capasities between 301 and 400:", new)
+    #print("Total number of classrooms:", count0and50 + count51and100 + count100and200 + count201and300 + new)
 
     new = 0
     count100and200, count0and50, count51and100, count201and300 = 0, 0, 0, 0
@@ -396,12 +399,12 @@ def statistic() :
             elif ikl == "F":
                 f.append(i.getTotalEnrolment())
 
-    print("Number of class capasities between 0 and 50:", count0and50)
-    print("Number of class capasities between 51 and 100:", count51and100)
-    print("Number of class capasities between 101 and 200:", count100and200)
-    print("Number of class capasities between 201 and 300:", count201and300)
-    print("Number of class capasities between 301 and 400:", new)
-    print("Total number of class:", count0and50 + count51and100 + count100and200 + count201and300 + new)
+    #print("Number of class capasities between 0 and 50:", count0and50)
+    #print("Number of class capasities between 51 and 100:", count51and100)
+    #print("Number of class capasities between 101 and 200:", count100and200)
+    #print("Number of class capasities between 201 and 300:", count201and300)
+    #print("Number of class capasities between 301 and 400:", new)
+    #print("Total number of class:", count0and50 + count51and100 + count100and200 + count201and300 + new)
 
     summ, sumt, sumw, sumr, sumf = 0, 0, 0, 0, 0
     for im, it, iw, ir, iff in zip(m, t, w, r, f):
@@ -411,10 +414,10 @@ def statistic() :
         sumr += ir
         sumf += iff
 
-        print(summ, sumt, sumw, sumr, sumf)
-        print("full:", summ + sumt + sumw + sumr + sumf, "fullall:", fullall)
-        print(len(courseList), len(m) + len(t) + len(w) + len(r) + len(f))
-        print("classroom:", sumclass)
+        #print(summ, sumt, sumw, sumr, sumf)
+        #print("full:", summ + sumt + sumw + sumr + sumf, "fullall:", fullall)
+        #print(len(courseList), len(m) + len(t) + len(w) + len(r) + len(f))
+        #print("classroom:", sumclass)
 
 def findclass(courseProps, clas, course):
     #print("findclass says hi")
@@ -431,9 +434,11 @@ def findclass(courseProps, clas, course):
                             clas[classroomList.index(k)] = 1
                             count += 1
                         elif classprops[props] == False:
-                            print("Course,",course.getCrnList()[0].getSubjName(), "course Prop:", props, " does not exist in Classroom props in classromm", k.getClassName())
+                            alfa = 0
+                            #print("Course,",course.getCrnList()[0].getSubjName(), "course Prop:", props, " does not exist in Classroom props in classromm", k.getClassName())
                     else:
-                        print("Course,", course.getCrnList()[0].getSubjName(), "asks for:", str(courseProps) + ". However classroom:", k.getClassName(), "doesn't have these properties.")
+                        alfa = 0
+                        #print("Course,", course.getCrnList()[0].getSubjName(), "asks for:", str(courseProps) + ". However classroom:", k.getClassName(), "doesn't have these properties.")
                 if count == numerOfProps:
                     clas[classroomList.index(k)] = 1
             else: #if courseprops == "Null":
@@ -620,12 +625,12 @@ def makeAitAndCij (term) :
         newdif.to_excel(writer, "dif", header = False, index = False)
 
         newQI.to_excel(writer, "QI", header = False, index = False)
-    print("End of Make-ait amd cij")
+    #print("End of Make-ait amd cij")
 
 def objectifFunction(term) :
-    print(term)
+    #print(term)
     # kapasit-emnrolment
-    print(courseCapacity.keys())
+    #print(courseCapacity.keys())
     sumtotal, sumM, sumt, sumw, sumr, sumf = 0, 0, 0, 0, 0, 0
     for i in courseList:
         enrolment = i.getTotalEnrolment()
@@ -649,12 +654,12 @@ def objectifFunction(term) :
                     sumf += (courseCapacity[coursename] - enrolment)
                     sumtotal += (courseCapacity[coursename] - enrolment)
             else :
-                print("Course Name: ", coursename)
-
-    print(sumtotal, sumM, sumt, sumw, sumr, sumf)
+                #print("Course Name: ", coursename)
+                alfa = 0
+    #print(sumtotal, sumM, sumt, sumw, sumr, sumf)
 
 def printToExcel() :
-    print("hi, PrintToExcel")
+    #print("hi, PrintToExcel")
     my_workbook = xlwt.Workbook()
     my_sheet = my_workbook.add_sheet("My Sheet",True)
 
@@ -706,13 +711,13 @@ def printToExcel() :
                 index += 1
 
     my_workbook.save("solution.xls")
-    print("End Of Me!!!...")
+    #print("End Of Me!!!...")
 
 def solutions() :
 
-    print("solutions")
+    #print("solutions")
     file_location = "Data/write.xlsx"
-    print("Hi, solutions")
+    #print("Hi, solutions")
     solutionWorkBook = xlrd.open_workbook(file_location)
 
     solutionSheet = solutionWorkBook.sheet_by_index(0)
@@ -730,13 +735,14 @@ def solutions() :
                     neeting.setBuilding(classroom.getClassBuilding())
                     neeting.setRoom(classroom.getClassRoom())
 
-    print("calling ... printToExcel")
+    #("calling ... printToExcel")
     printToExcel()
 
 
 def classparse(file) :
-    print(file.columns)
-    print("ssubj", file.loc[0])
+    alfa = 0
+    #print(file.columns)
+    #print("ssubj", file.loc[0])
 
 
 #Main function
@@ -781,15 +787,50 @@ term201902 = term201902.drop('Term Code', axis = 1)
 #classparse(term201701)
 
 term201901.to_csv('term201701.csv', header = False, index = False)
-crn2Course.clear()
-courseList.clear()
-doubleCode2Course.clear()
+
+
 lesseonParse("term201701.csv", "201901")
 makeAitAndCij("201901")
-print(len(courseList))
+#print(courseList[])
+
+for a in classroomList:
+    alfa=0
+    #print(a)
+for b in courseList:#b is course info
+    #print(b.getTotalEnrolment()  )
+    #for x in b.getclas():#this is list type
+        #print("getclas() FR/FRT/FT")
+
+    #print("ders props",b.getPROP())
+    for x in b.getCrnList():
+        #print(x.getSubjName()+" is on ")
+        for c in b.getMeetingList():
+            #print(c.getname())
+            for d in classroomList:
+                if d.getClassName() == c.getname():
+                    sayaç=True
+                    toplam=""
+                    for all in b.getPROP():
+                        if all == 'VID' or d.getClassFeatures()[all] !=True  :
+                            sayaç=False
+                            toplam=all+";"+toplam
+                    if sayaç:
+                        #print(" room has given features:")
+                        alpha=0
+                    elif sayaç==False :
+                        print(x.getSubjName() + " is on " + c.getname() + " this room lacks :" + toplam)
+                        print("Course demands "+str(b.getTotalEnrolment())+" enrollment")
+                    #print("all features of classroom:")
+                    #print(d.getClassFeatures())
+        #print(x.getEnrolment())
+
 
 objectifFunction("201901")
 #solutions()
+
+crn2Course.clear()
+courseList.clear()
+doubleCode2Course.clear()
 '''
 term201702.to_csv("term201702.csv", header = False, index = False)
 crn2Course.clear()
