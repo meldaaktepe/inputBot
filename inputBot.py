@@ -19,7 +19,7 @@ courseCapacity = {}
 studiAndLab = {}
 
 requsite_classdic = {}
-
+requsite_class_witmissprops = []
 '#For UI'
 'Something here'
 
@@ -299,12 +299,12 @@ def classroomParse(file):
         building = file["BLDG"][_]
         room = file["ROOM"][_]
         des = file["CLASS_DESC"][_]
-        type = file["CLASS_TYPE"][_]
+        room_type = file["CLASS_TYPE"][_]
         capacity = file["CAPACITY"][_]
         feature_code = file["RDEF_CODE"][_]
         # feature_des = file["RDEF_DESC"][_]
 
-        if type != "LAB" and type != "STUD":
+        if room_type != "LAB" and room_type != "STUD":
             classRoom = building + room
             if prewRoom == classRoom:
                 '#aynıyasa property güncelllencek'
@@ -315,10 +315,10 @@ def classroomParse(file):
                 classRoompropertyDictionary = propertyDictionary.copy()
                 classRoompropertyDictionary[feature_code] = True
                 '#class obj yarat listeye ekle'
-                classroomInfos = classroomInfo(building, room, des, type, capacity, classRoompropertyDictionary)
+                classroomInfos = classroomInfo(building, room, des, room_type, capacity, classRoompropertyDictionary)
                 classroomList.append(classroomInfos)
         else:
-            studiAndLab[building + room] = type
+            studiAndLab[building + room] = room_type
             courseCapacity[classRoom] = capacity
 
 def printAll() :
@@ -438,8 +438,7 @@ def findclass(courseProps, clas, course):
                     clas[classroomList.index(k)] = 1
             else: #if courseprops == "Null":
                 clas[classroomList.index(k)] = 1
-
-        else: #if  requsite_class != "":
+        elif "FRT" in requsite_class or "FR" in requsite_class:
             coursenamelist = []
             for i in course.getCrnList():
                 coursenamelist.append((i.getSubjName()))
@@ -734,61 +733,70 @@ def solutions() :
     printToExcel()
 
 
-def classparse(file) :
+def classparse_withpPandas(file) :
     print(file.columns)
     print("ssubj", file.loc[0])
+
+def find_missingProps():
+    print("find missing props")
+    count = 0
+    for i in courseList:
+        if i.getclas() is "FT" or i.getclas() is "" :
+            courseProps = i.getPROP()
+            meatings = i.getMeetingList()
+            for meeting in meatings:
+                for j in classroomList:
+                    if meeting.getname() == j.getClassName():
+                        classprops = j.getClassFeatures()
+                        for prop in  courseProps:
+                            if prop in classprops:
+                                if  classprops[prop] == False:
+                                   # print(i.getCrnList()[0].getSubjName(), "wants ", prop, "but, class ", j.getClassName(), "doesn't have this prop")
+                                    count += 1
+                                    requsite_class_witmissprops.append(courseList.index(i))
+                                    i.setPROP("")
+                            else:
+                                print(i.getCrnList()[0].getSubjName(), "wants ", prop, "but, class", j.getClassName(), "'s feature list doesn't have this prop")
+    print(count)
 
 
 #Main function
 
-# For Rooms
+'# For Rooms'
 
-# Read file from excel
+'# Read file from excel'
 file_location = "Data/derslik_20190410.xlsx"
-#file_locationClassRooms = input("please enter file location of the classrooms excel file")
 data_file = pd.read_excel(file_location)
-
-#data_file.to_csv("derslik.csv", header = False, index = False)
 classroomParse(data_file)
 
-#For courses
+'#For courses'
 file_location = "Data/dersler_20191108.xlsx"
-#file_locationlessons = input("please enter file location of the lessons excel file")
 data_file = pd.read_excel(file_location)
 
-#Seperate terms
-'''
-term201701 = data_file.loc[data_file["Term Code"] == 201701]
-term201702 = data_file.loc[data_file["Term Code"] == 201702]
-term201801 = data_file.loc[data_file["Term Code"] == 201801]
-term201802 = data_file.loc[data_file["Term Code"] == 201802]
-#Drop TermCode colum
-term201701 = term201701.drop('Term Code', axis = 1)
-term201702 = term201702.drop('Term Code', axis = 1)
-term201801 = term201801.drop('Term Code', axis = 1)
-term201802 = term201802.drop('Term Code', axis = 1)
-'''
-
+'#Seperate terms'
 term201901 = data_file.loc[data_file["Term Code"] == 201901]
 term201902 = data_file.loc[data_file["Term Code"] == 201902]
 term201901 = term201901.drop('Term Code', axis = 1)
 term201902 = term201902.drop('Term Code', axis = 1)
 
-#Make excel file to csv file
-# header = False = Drops the header of colums
-# header = False = Drops the index of rows
+'#Make excel file to csv file'
+'# header = False = Drops the header of colums'
+'# header = False = Drops the index of rows'
 
 #classparse(term201701)
 
 term201901.to_csv('term201701.csv', header = False, index = False)
+
 crn2Course.clear()
 courseList.clear()
 doubleCode2Course.clear()
-lesseonParse("term201701.csv", "201901")
-makeAitAndCij("201901")
-print(len(courseList))
 
-objectifFunction("201901")
+lesseonParse("term201701.csv", "201901")
+find_missingProps()
+makeAitAndCij("201901")
+
+
+#objectifFunction("201901")
 #solutions()
 '''
 term201702.to_csv("term201702.csv", header = False, index = False)
