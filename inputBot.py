@@ -262,7 +262,19 @@ def lesseonParse(fileName, tearm):
                 and beginTime != "Null" and endTime != "Null"
                 and subjCode !="CIP" and (Building + Room) not in studiAndLab) :
             if "FRT" in requsite_class or "FR" in requsite_class:
-                requsite_classdic[subjectName] = (Building + Room)
+                if subjectName in requsite_classdic:
+                    classes = []
+                    temp = requsite_classdic[subjectName]
+                    if type(temp) is str :
+                        classes.append(temp)
+                    elif type(temp) is list :
+                        for i in temp:
+                            classes.append(i)
+                    classes.append((Building + Room))
+                    requsite_classdic[subjectName] = classes
+                    print(subjectName, requsite_classdic[subjectName])
+                elif subjectName not in requsite_classdic:
+                    requsite_classdic[subjectName] = (Building + Room)
             createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, beginTime, endTime, doubleCoded, PROP, requsite_class)
 
         elif dayS == "S" or ((Building == "Null" or Building == "KCC" or Building == "UC")
@@ -270,12 +282,14 @@ def lesseonParse(fileName, tearm):
                  or beginTime == "Null" or endTime == "Null"
                 or subjCode == "CIP" or (Building + Room) in studiAndLab) :
             if (Building + Room) in studiAndLab :
-                print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
-                      "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime,
-                      "in", studiAndLab[Building + Room])
+                #print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
+                     # "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime,
+                      #"in", studiAndLab[Building + Room])
+                cont =  0
             else :
-                print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
-                  "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime)
+                a = 0
+                #print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
+                 # "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime)
 
 def classroomParse(file):
 
@@ -442,12 +456,26 @@ def findclass(courseProps, clas, course):
                 coursenamelist.append((i.getSubjName()))
             for lessonname in coursenamelist:
                 if lessonname in requsite_classdic:
-                    if requsite_classdic[lessonname] == k.getClassName():
-                        clas[classroomList.index(k)] = 1
+                    classnames = requsite_classdic[lessonname]
+                    if type(classnames) is str:
+                        if classnames == k.getClassName():
+                            clas[classroomList.index(k)] = 1
+                    elif type(classnames) is list:
+                        for classname in classnames:
+                            if classname == k.getClassName():
+                                clas[classroomList.index(k)] = 1
 
     return clas
 
-def makeAitAndCij (term) :
+def findclass2(building, room, clas):
+    for k in classroomList:
+        classname = (building + room)
+        if classname == k.getClassName():
+            clas[classroomList.index(k)] = 1
+    return clas
+
+
+def makeAitAndCij(term) :
     ait, aITm, aITt, aITw, aITr, aITf = [], [], [], [], [], []
     QI, di, dim, dit, diw, dir, dif = [], [], [], [], [], [], []
     clasRooms, classRoomName = [], []
@@ -536,7 +564,8 @@ def makeAitAndCij (term) :
             new_weekly_time[-2] = k.getBeginTime()
             new_weekly_time[-1] = k.getEndTime()
 
-            clas_daily = clas_weekly.copy()
+            clas_daily = clasRooms.copy()
+            clas_daily = findclass2(k.getBuilding(), k.getRoom(), clas_daily)
             clas_daily[-2] = i.getCrnList()[0].getcrn()
             clas_daily[-1] = i.getCrnList()[0].getSubjName()
 
