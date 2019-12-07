@@ -23,7 +23,6 @@ requsite_class_witmissprops = []
 '#For UI'
 'Something here'
 
-
 def createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, beginTime, endTime, doubleCoded, PROP, clas) :
     # Chcek given course is exists
     if CRN in crn2Course:  # if exists
@@ -278,7 +277,6 @@ def lesseonParse(fileName, tearm):
                 print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
                   "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime)
 
-
 def classroomParse(file):
 
     '# Take Features'
@@ -297,7 +295,7 @@ def classroomParse(file):
 
     for _ in range((len(file))):
         building = file["BLDG"][_]
-        room = file["ROOM"][_]
+        room = str(file["ROOM"][_])
         des = file["CLASS_DESC"][_]
         room_type = file["CLASS_TYPE"][_]
         capacity = file["CAPACITY"][_]
@@ -424,7 +422,7 @@ def findclass(courseProps, clas, course):
         if requsite_class == "" or "FT" in requsite_class :
             if courseProps != "":
                 numerOfProps = len(courseProps)
-                count, classcount = 0, 0
+                count = 0
                 for props in courseProps:
                     if props in classprops :
                         if classprops[props] == True:
@@ -732,7 +730,6 @@ def solutions() :
     print("calling ... printToExcel")
     printToExcel()
 
-
 def classparse_withpPandas(file) :
     print(file.columns)
     print("ssubj", file.loc[0])
@@ -792,7 +789,7 @@ courseList.clear()
 doubleCode2Course.clear()
 
 lesseonParse("term201701.csv", "201901")
-find_missingProps()
+#find_missingProps()
 makeAitAndCij("201901")
 
 
