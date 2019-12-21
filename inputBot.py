@@ -1,8 +1,8 @@
 import pandas as pd
 import xlrd, xlwt
 
-import tkinter as tk
-from tkinter import filedialog
+#import tkinter as tk
+#from tkinter import filedialog
 
 from classes import courseInfo as courseInfo
 from classes import lessonInfo as lessonInfo
@@ -119,6 +119,7 @@ def lesseonParse(fileName, tearm):
     data_file = open(fileName, 'r')
     content = data_file.readlines()
     # Read content line by line
+    frcount = 0
     for line in content:
         # Parse lines
         subjCode = line[0: line.find(",")]
@@ -241,7 +242,7 @@ def lesseonParse(fileName, tearm):
                     or endTime == 1750 or endTime == 1850 or endTime == 1950 or endTime == 2050
                     or endTime == 2150 or endTime == 2250 or endTime == 2350):
                 print("In", tearm, "Course Name :", subjectName, "ends at", endTime)
-                endTime = endTime + 40
+                endTime = endTime + 80
                 print(", we asume that will ends at", endTime)
             elif (endTime == 940 or endTime == 1040 or endTime == 1140 or endTime == 1240
                   or endTime == 1340 or endTime == 1440 or endTime == 1540 or endTime == 1640
@@ -250,6 +251,7 @@ def lesseonParse(fileName, tearm):
                 print("In", tearm, "Course Name :", subjectName, "ends at", endTime)
                 endTime = endTime - 10
                 print(", we asume that will ends at", endTime)
+
 
         else :
             print("In", tearm, "Course Name :", subjectName, "starts at", beginTime, ", ends at", endTime)
@@ -272,9 +274,10 @@ def lesseonParse(fileName, tearm):
                             classes.append(i)
                     classes.append((Building + Room))
                     requsite_classdic[subjectName] = classes
-                    print(subjectName, requsite_classdic[subjectName])
+                    #print(subjectName, requsite_classdic[subjectName])
                 elif subjectName not in requsite_classdic:
                     requsite_classdic[subjectName] = (Building + Room)
+                    frcount += 1
             createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, beginTime, endTime, doubleCoded, PROP, requsite_class)
 
         elif dayS == "S" or ((Building == "Null" or Building == "KCC" or Building == "UC")
@@ -290,7 +293,7 @@ def lesseonParse(fileName, tearm):
                 a = 0
                 #print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
                  # "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime)
-
+    print("frsss.........", frcount)
 def classroomParse(file):
 
     '# Take Features'
@@ -440,7 +443,7 @@ def findclass(courseProps, clas, course):
                 for props in courseProps:
                     if props in classprops :
                         if classprops[props] == True:
-                            clas[classroomList.index(k)] = 1
+                            #clas[classroomList.index(k)] = 1
                             count += 1
                         elif classprops[props] == False:
                             print("Course,",course.getCrnList()[0].getSubjName(), "course Prop:", props, " does not exist in Classroom props in classromm", k.getClassName())
@@ -565,7 +568,7 @@ def makeAitAndCij(term) :
             new_weekly_time[-1] = k.getEndTime()
 
             clas_daily = clasRooms.copy()
-            clas_daily = findclass2(k.getBuilding(), k.getRoom(), clas_daily)
+            clas_daily = findclass(courseProps, clas_daily, i)
             clas_daily[-2] = i.getCrnList()[0].getcrn()
             clas_daily[-1] = i.getCrnList()[0].getSubjName()
 
@@ -659,21 +662,18 @@ def objectifFunction(term) :
         for meeting in meetinglist :
             coursename = meeting.getname()
             if coursename in courseCapacity :
+                result = (courseCapacity[coursename] - enrolment)
                 if meeting.getDay()  is "M":
-                    sumM += (courseCapacity[coursename] - enrolment)
-                    sumtotal += (courseCapacity[coursename] - enrolment)
+                    sumM += result
                 elif meeting.getDay()  is "T":
-                    sumt += (courseCapacity[coursename] - enrolment)
-                    sumtotal += (courseCapacity[coursename] - enrolment)
+                    sumt += result
                 elif meeting.getDay()  is "W":
-                    sumw += (courseCapacity[coursename] - enrolment)
-                    sumtotal += (courseCapacity[coursename] - enrolment)
+                    sumw += result
                 elif meeting.getDay()  is "R":
-                    sumr += (courseCapacity[coursename] - enrolment)
-                    sumtotal += (courseCapacity[coursename] - enrolment)
+                    sumr += result
                 elif meeting.getDay()  is "F":
-                    sumf += (courseCapacity[coursename] - enrolment)
-                    sumtotal += (courseCapacity[coursename] - enrolment)
+                    sumf += result
+                sumtotal += result
             else :
                 print("Course Name: ", coursename)
 
@@ -767,6 +767,7 @@ def find_missingProps():
     print("find missing props")
     count = 0
     for i in courseList:
+        proplist = []
         if i.getclas() is "FT" or i.getclas() is "" :
             courseProps = i.getPROP()
             meatings = i.getMeetingList()
@@ -776,14 +777,15 @@ def find_missingProps():
                         classprops = j.getClassFeatures()
                         for prop in  courseProps:
                             if prop in classprops:
-                                if  classprops[prop] == False:
+                                if  classprops[prop] == True:
                                    # print(i.getCrnList()[0].getSubjName(), "wants ", prop, "but, class ", j.getClassName(), "doesn't have this prop")
                                     count += 1
                                     requsite_class_witmissprops.append(courseList.index(i))
-                                    i.setPROP("")
+                                    proplist.append(prop)
                             else:
                                 print(i.getCrnList()[0].getSubjName(), "wants ", prop, "but, class", j.getClassName(), "'s feature list doesn't have this prop")
     print(count)
+    i.setPROP(proplist)
 
 
 #Main function
@@ -796,7 +798,7 @@ data_file = pd.read_excel(file_location)
 classroomParse(data_file)
 
 '#For courses'
-file_location = "Data/dersler_20191108.xlsx"
+file_location = "Data/dersler_20191108_v2.xlsx"
 data_file = pd.read_excel(file_location)
 
 '#Seperate terms'
@@ -818,9 +820,11 @@ courseList.clear()
 doubleCode2Course.clear()
 
 lesseonParse("term201701.csv", "201901")
-#find_missingProps()
-makeAitAndCij("201901")
+find_missingProps()
+makeAitAndCij("201902")
 
+print("labs:...", len(studiAndLab))
+print(len(courseList))
 
 #objectifFunction("201901")
 #solutions()
@@ -833,21 +837,6 @@ lesseonParse("term201701.csv", "201702")
 makeAitAndCij("201702")
 objectifFunction("20702")
 
-term201801.to_csv("term201801.csv", header = False, index = False)
-crn2Course.clear()
-courseList.clear()
-doubleCode2Course.clear()
-lesseonParse("term201801.csv", "201801")
-makeAitAndCij("201801")
-objectifFunction()
-
-term201802.to_csv("term201802.csv", header = False, index = False)
-crn2Course.clear()
-courseList.clear()
-doubleCode2Course.clear()
-lesseonParse("term201701.csv", "201802")
-makeAitAndCij("201802")
-objectifFunction()
 '''
 '''
 print("Before assignment:")
