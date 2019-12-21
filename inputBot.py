@@ -787,64 +787,149 @@ def find_missingProps():
     print(count)
     i.setPROP(proplist)
 
+file_location1=""
+file_location2=""
+# Main function
 
-#Main function
+def main():
+    '# For Rooms'
 
-'# For Rooms'
+    '# Read file from excel'
+    file_location1 = "Data/derslik_20190410.xlsx"
+    data_file = pd.read_excel(file_location1)
+    classroomParse(data_file)
 
-'# Read file from excel'
-file_location = "Data/derslik_20190410.xlsx"
-data_file = pd.read_excel(file_location)
-classroomParse(data_file)
+    '#For courses'
+    file_location2 = "Data/dersler_20191108_v2.xlsx"
+    data_file = pd.read_excel(file_location2)
 
-'#For courses'
-file_location = "Data/dersler_20191108_v2.xlsx"
-data_file = pd.read_excel(file_location)
+    '#Seperate terms'
+    term201901 = data_file.loc[data_file["Term Code"] == 201901]
+    term201902 = data_file.loc[data_file["Term Code"] == 201902]
+    term201901 = term201901.drop('Term Code', axis=1)
+    term201902 = term201902.drop('Term Code', axis=1)
 
-'#Seperate terms'
-term201901 = data_file.loc[data_file["Term Code"] == 201901]
-term201902 = data_file.loc[data_file["Term Code"] == 201902]
-term201901 = term201901.drop('Term Code', axis = 1)
-term201902 = term201902.drop('Term Code', axis = 1)
+    '#Make excel file to csv file'
+    '# header = False = Drops the header of colums'
+    '# header = False = Drops the index of rows'
 
-'#Make excel file to csv file'
-'# header = False = Drops the header of colums'
-'# header = False = Drops the index of rows'
+    # classparse(term201701)
 
-#classparse(term201701)
+    term201901.to_csv('term201701.csv', header=False, index=False)
 
-term201901.to_csv('term201701.csv', header = False, index = False)
+    crn2Course.clear()
+    courseList.clear()
+    doubleCode2Course.clear()
 
-crn2Course.clear()
-courseList.clear()
-doubleCode2Course.clear()
+    lesseonParse("term201701.csv", "201901")
+    find_missingProps()
+    makeAitAndCij("201902")
 
-lesseonParse("term201701.csv", "201901")
-find_missingProps()
-makeAitAndCij("201902")
+    print("labs:...", len(studiAndLab))
+    print(len(courseList))
 
-print("labs:...", len(studiAndLab))
-print(len(courseList))
+    # objectifFunction("201901")
+    # solutions()
+    '''
+    term201702.to_csv("term201702.csv", header = False, index = False)
+    crn2Course.clear()
+    courseList.clear()
+    doubleCode2Course.clear()
+    lesseonParse("term201701.csv", "201702")
+    makeAitAndCij("201702")
+    objectifFunction("20702")
 
-#objectifFunction("201901")
-#solutions()
-'''
-term201702.to_csv("term201702.csv", header = False, index = False)
-crn2Course.clear()
-courseList.clear()
-doubleCode2Course.clear()
-lesseonParse("term201701.csv", "201702")
-makeAitAndCij("201702")
-objectifFunction("20702")
+    '''
+    '''
+    print("Before assignment:")
+    #printAll()
+    #solutions()
+    print("After assignment:")
+    #printAll()
+    #print("Printing Statistics..")
+    statistic()
+    '''
+    print("done")
 
-'''
-'''
-print("Before assignment:")
-#printAll()
-#solutions()
-print("After assignment:")
-#printAll()
-#print("Printing Statistics..")
-statistic()
-'''
-print("done")
+main()
+
+import tkinter as tk
+from tkinter import filedialog
+height = 700
+width = 700
+root = tk.Tk()
+root.title("GUI")
+
+
+def select_folder():
+    file_location1 = filedialog.askopenfilename()
+    label["text"] = str(file_location1)
+
+
+def course_folder():
+    file_location2 = filedialog.askopenfilename()
+    label2["text"] = str(file_location2)
+
+import os
+def null():
+
+    file = "term201701.csv"
+    os.startfile(file)
+
+
+canvas = tk.Canvas(root, height=height, width=width)
+canvas.pack()
+
+button = tk.Button(height='1', width='17', text="Choose class file", command=select_folder)
+button.pack()
+button.place(relx="0.1", rely="0.1")
+
+
+button = tk.Button(height='1', width='17', text="Choose course folder", command=course_folder)
+button.pack()
+button.place(relx="0.1", rely="0.2")
+
+button3 = tk.Button(height='2', width='17', text="Assign", command=main)
+button3.pack()
+button3.place(relx="0.10", rely="0.35")
+
+button4 = tk.Button(height='2', width='17', text="Show The Results", command=null)
+button4.pack()
+button4.place(relx="0.63", rely="0.35")
+
+label = tk.Label(height='1', width='60', bg='white', font=("Times New Roman", "8"))
+label.pack()
+label.place(relx="0.3", rely="0.1045")
+
+label2 = tk.Label(height='1', width='60', bg='white', font=("Times New Roman", "8"))
+label2.pack()
+label2.place(relx="0.3", rely="0.2047")
+
+text = tk.Label(height='13', width='57', bg='white', font=("Times New Roman", "8"))
+text.pack()
+text.place(relx='0.1', rely='0.5')
+
+
+root.resizable(False, False)
+root.mainloop()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
