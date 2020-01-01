@@ -1,9 +1,8 @@
-class courseInfo:
-    def __init__(self, totalEnrolment, PROP, doubleCoded, clas):
+class courseInfo(object):
+    def __init__(self, totalEnrolment, PROP, doubleCoded):
         self.totalEnrolment = totalEnrolment
         self.PROP = PROP
         self.doubleCoded = doubleCoded
-        self.clas = clas
 
     def getTotalEnrolment(self):
         return self.totalEnrolment
@@ -20,9 +19,6 @@ class courseInfo:
     def getCrnList(self):
         return self.crnList
 
-    def getclas(self):
-        return self.clas
-
     def setTotalEnrolment(self, totalEnrolment):
         self.totalEnrolment = totalEnrolment
 
@@ -37,10 +33,6 @@ class courseInfo:
 
     def setCrnList(self, crnList):
         self.crnList = crnList
-
-    def setclas(self, clas):
-        self.clas = clas
-
 
 class lessonInfo:
     def __init__(self, subjName, crn, enrolment, courseItem):
@@ -61,15 +53,15 @@ class lessonInfo:
     def getCourseItem(self):
         return self.courseItem
 
-
 class meatingInfo:
-    def __init__(self, Building, Room, day, beginTime, endTime, courseItem):
+    def __init__(self, Building, Room, day, beginTime, endTime, courseItem, req_classroom):
         self.Building = Building
         self.Room = Room
         self.day = day
         self.beginTime = beginTime
         self.endTime = endTime
         self.courseItem = courseItem
+        self.req_classroom = req_classroom
 
     def getBuilding(self):
         return self.Building
@@ -92,6 +84,8 @@ class meatingInfo:
     def getname(self):
         return self.Building + self.Room
 
+    def getReq_classroom(self):
+        return self.req_classroom
 
 class classroomInfo:
     def __init__(self, building, room, des, classroomType, capacity, features):
