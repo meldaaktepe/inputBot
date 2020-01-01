@@ -20,10 +20,14 @@ studiAndLab = {}
 
 requsite_classdic = {}
 requsite_class_witmissprops = []
+
+report_file = open("Reports/report_file.txt", 'w')
+report_file.write("hi")
+
 '#For UI'
 'Something here'
 
-def createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, beginTime, endTime, doubleCoded, PROP, clas) :
+def createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, beginTime, endTime, doubleCoded, PROP, req_classroom) :
     # Chcek given course is exists
     if CRN in crn2Course:  # if exists
         if doubleCoded in doubleCode2Course:  # if it is doubleCoded course
@@ -41,7 +45,7 @@ def createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, begi
                     if weekdays[i] != "":
                         day = weekdays[i]
 
-                        meetingInformation = meatingInfo(Building, Room, day, beginTime, endTime, courseItem)
+                        meetingInformation = meatingInfo(Building, Room, day, beginTime, endTime, courseItem, req_classroom)
                         meetingList.append(meetingInformation)
                         newLesson.setMeetingList(meetingList)
 
@@ -57,7 +61,7 @@ def createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, begi
                     day = weekdays[i]
 
                     # Create meeting information list
-                    meetingInformation = meatingInfo(Building, Room, day, beginTime, endTime, courseItem)
+                    meetingInformation = meatingInfo(Building, Room, day, beginTime, endTime, courseItem, req_classroom)
                     meetingList.append(meetingInformation)
                     newLesson.setMeetingList(meetingList)
 
@@ -88,7 +92,7 @@ def createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, begi
             meetingList = []
 
             # Create course information and unite lessonlist and meetinglist
-            courseInformation = courseInfo(enrolment, PROP, doubleCoded, clas)
+            courseInformation = courseInfo(enrolment, PROP, doubleCoded)
             # Create lesson information list
             lessonInformation = lessonInfo(subjectName, CRN, enrolment, len(courseList))
             lessonList.append(lessonInformation)
@@ -98,7 +102,7 @@ def createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, begi
                     day = weekdays[i]
 
                     # Create meeting information list
-                    meetingInformation = meatingInfo(Building, Room, day, beginTime, endTime, len(courseList))
+                    meetingInformation = meatingInfo(Building, Room, day, beginTime, endTime, len(courseList), req_classroom)
                     meetingList.append(meetingInformation)
 
             courseInformation.setMeetingList(meetingList)
@@ -114,78 +118,61 @@ def createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, begi
                 '''
                 doubleCode2Course[doubleCoded] = courseInformation
 
-def lesseonParse(fileName, tearm):
-    # Open file and read lines
-    data_file = open(fileName, 'r')
-    content = data_file.readlines()
-    # Read content line by line
-    frcount = 0
-    for line in content:
-        # Parse lines
-        subjCode = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
+def lesseonParse(file):
 
-        courseNumber = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
+    for i in range(len(file)):
 
-        sectionNumber = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
+        subjCode = file.loc[i]['Subj Code']
+        courseNumber = file.loc[i]['Crse Numb']
+        sectionNumber = file.loc[i]['Section Numb']
+        CRN = file.loc[i]['CRN']
+        Building = file.loc[i]['Building']
+        Room = file.loc[i]['Room']
+        enrolment = file.loc[i]['SSBSECT_ENRL']
+        dayM = file.loc[i]['MON']
+        dayT = file.loc[i]['TUE']
+        dayW = file.loc[i]['WED']
+        dayR = file.loc[i]['THU']
+        dayF = file.loc[i]['FRI']
+        dayS = file.loc[i]['SAT']
+        beginTime = file.loc[i]['Begin Time']
+        endTime = file.loc[i]['End Time']
+        doubleCoded = file.loc[i]['Double Coded']
+        PROP = file.loc[i]['PROP']
+        requsite_class = file.loc[i]['FORCETIMEROOM']
 
-        CRN = int(float(line[0: line.find(",")]))
-        line = line[line.find(",") + 1:]
-        #print("CRN: ", CRN, type(CRN))
-
-        Building = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
-        if (Building == ""):
+        CRN = int(float(CRN))
+        if pd.isnull(file.loc[i, 'Building']):
             Building = "Null"
-
-        Room = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
-        if (Room == ""):
+        if pd.isnull(file.loc[i, 'Room']):
             Room = "Null"
-
-        enrolment = int(float(line[0: line.find(",")]))
-        line = line[line.find(",") + 1:]
-
-        dayM = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
-
-        dayT = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
-
-        dayW = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
-
-        dayR = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
-
-        dayF = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
-
-        dayS = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
-
+        enrolment = int(float(enrolment))
+        if pd.isnull(file.loc[i, 'MON']):
+            dayM = ""
+        if pd.isnull(file.loc[i, 'TUE']):
+            dayT = ""
+        if pd.isnull(file.loc[i, 'WED']):
+            dayW = ""
+        if pd.isnull(file.loc[i, 'THU']):
+            dayR = ""
+        if pd.isnull(file.loc[i, 'FRI']):
+            dayF = ""
+        if pd.isnull(file.loc[i, 'SAT']):
+            dayS = ""
         weekdays = [dayM, dayT, dayW, dayR, dayF, dayS]
-
-        beginTime = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
-        if (beginTime == ""):
+        if pd.isnull(file.loc[i, 'Begin Time']):
             beginTime = "Null"
         else :
             beginTime = int(float(beginTime))
-        endTime = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
-        if (endTime == ""):
+        if pd.isnull(file.loc[i, 'End Time']):
             endTime = "Null"
-        else :
+        else:
             endTime = int(float(endTime))
+        if pd.isnull(file.loc[i, 'Double Coded']):
+            doubleCoded = ""
+        if pd.isnull(file.loc[i, 'PROP']):
+            PROP = ""
 
-        doubleCoded = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
-
-        PROP = line[0: line.find(",")]
-        line = line[line.find(",") + 1:]
         # if prop is not Null // if there is a special request
         if (PROP != ""):
             PROP = PROP.split(";")
@@ -193,13 +180,12 @@ def lesseonParse(fileName, tearm):
             for index in PROP:
                 newprop.append(index.lstrip())  # " PC"  To seperate this i used lstrip to strip from lefth
             PROP = newprop
-        requsite_class = line
 
-        if (requsite_class != "\n"):
+        if pd.isnull(file.loc[i, 'FORCETIMEROOM']):
+            requsite_class = ""
+        else:
             requsite_class = requsite_class.split(";")
             requsite_class[-1] = requsite_class[-1].strip("\n")
-        else :
-            requsite_class = ""
 
         # Make New SubjectName
         subjectName = subjCode + " - " + courseNumber + " - " + sectionNumber + " - " + str(CRN)
@@ -209,52 +195,65 @@ def lesseonParse(fileName, tearm):
                     or beginTime == 1300 or beginTime == 1400 or beginTime == 1500 or beginTime == 1600
                     or beginTime == 1700 or beginTime == 1800 or beginTime == 1900 or beginTime == 2000
                     or beginTime == 2100 or beginTime == 2200 or beginTime == 2300):
-                print("In", tearm, "Course Name :", subjectName, "starts at", beginTime)
+                begin = [beginTime]
                 beginTime = beginTime - 60
-                print(", we asume that will start at", beginTime)
+                begin.append(beginTime)
+                report = "Course Name :" + subjectName + " starts at " + str(begin[0]) + ", we asume that will start at " + str(begin[1]) + "\n"
+                report_file.write(report)
 
             elif (beginTime == 930 or beginTime == 1030 or beginTime == 1130 or beginTime == 1230
                   or beginTime == 1330 or beginTime == 1430 or beginTime == 1530 or beginTime == 1630
                   or beginTime == 1730 or beginTime == 1830 or beginTime == 1930 or beginTime == 2030
                   or beginTime == 2130 or beginTime == 2230) :
-                print("In", tearm, "Course Name :", subjectName, "starts at", beginTime)
+                begin = [beginTime]
                 beginTime = beginTime + 10
-                print(", we asume that will start at", beginTime)
+                begin.append(beginTime)
+                report = "Course Name :" + subjectName + " starts at " + str(begin[0]) + ", we asume that will start at " + str(begin[1]) + "\n"
+                report_file.write(report)
 
             elif (beginTime == 950 or beginTime == 1050 or beginTime == 1150 or beginTime == 1250
                   or beginTime == 1350 or beginTime == 1450 or beginTime == 1550 or beginTime == 1650
                   or beginTime == 1750 or beginTime == 1850 or beginTime == 1950 or beginTime == 2050
                   or beginTime == 2150 or beginTime == 2250) :
-                print("In", tearm, "Course Name :", subjectName, "starts at", beginTime)
+                begin = [beginTime]
                 beginTime = beginTime - 10
-                print(", we asume that will start at", beginTime)
+                begin.append(beginTime)
+                report = "Course Name :" + subjectName + " starts at " + str(begin[0]) + ", we asume that will start at " + str(begin[1]) + "\n"
+                report_file.write(report)
 
             if (endTime == 900 or endTime == 1000 or endTime == 1100 or endTime == 1200
                     or endTime == 1300 or endTime == 1400 or endTime == 1500 or endTime == 1600
                     or endTime == 1700 or endTime == 1800 or endTime == 1900 or endTime == 2000
                     or endTime == 2100 or endTime == 2200 or endTime == 2300):
-                print("In", tearm, "Course Name :", subjectName, "ends at", endTime)
+                end = [endTime]
                 endTime = endTime + 30
-                print(", we asume that will ends at", endTime)
+                end.append(endTime)
+                report = "Course Name :" + subjectName + " ends at " + str(end[0]) + ", we asume that will end at " + str(end[1]) + "\n"
+                report_file.write(report)
 
             elif (endTime == 950 or endTime == 1050 or endTime == 1150 or endTime == 1250
                     or endTime == 1350 or endTime == 1450 or endTime == 1550 or endTime == 1650
                     or endTime == 1750 or endTime == 1850 or endTime == 1950 or endTime == 2050
                     or endTime == 2150 or endTime == 2250 or endTime == 2350):
-                print("In", tearm, "Course Name :", subjectName, "ends at", endTime)
+                end = [endTime]
                 endTime = endTime + 80
-                print(", we asume that will ends at", endTime)
+                end.append(endTime)
+                report = "Course Name :" + subjectName + " ends at " + str(end[0]) + ", we asume that will end at " + str(end[1]) + "\n"
+                report_file.write(report)
             elif (endTime == 940 or endTime == 1040 or endTime == 1140 or endTime == 1240
                   or endTime == 1340 or endTime == 1440 or endTime == 1540 or endTime == 1640
                   or endTime == 1740 or endTime == 1840 or endTime == 1940 or endTime == 2040
                   or endTime == 2140 or endTime == 2240 or endTime == 2340):
-                print("In", tearm, "Course Name :", subjectName, "ends at", endTime)
+                end = [endTime]
                 endTime = endTime - 10
-                print(", we asume that will ends at", endTime)
+                end.append(endTime)
+                report = "Course Name :" + subjectName + " ends at " + str(end[0]) + ", we asume that will end at " + str(end[1]) + "\n"
+                report_file.write(report)
 
 
         else :
-            print("In", tearm, "Course Name :", subjectName, "starts at", beginTime, ", ends at", endTime)
+            report = "Course Name :" + subjectName + " starts at " + str(beginTime) + ", ends at " + str(endTime) + "\n"
+            report_file.write(report)
 
         # if day is weakend or building is empty or room is empty or building of campus
         # or beginning time is empty or ending time is empty dont added to the list
@@ -274,10 +273,8 @@ def lesseonParse(fileName, tearm):
                             classes.append(i)
                     classes.append((Building + Room))
                     requsite_classdic[subjectName] = classes
-                    #print(subjectName, requsite_classdic[subjectName])
                 elif subjectName not in requsite_classdic:
                     requsite_classdic[subjectName] = (Building + Room)
-                    frcount += 1
             createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, beginTime, endTime, doubleCoded, PROP, requsite_class)
 
         elif dayS == "S" or ((Building == "Null" or Building == "KCC" or Building == "UC")
@@ -285,25 +282,22 @@ def lesseonParse(fileName, tearm):
                  or beginTime == "Null" or endTime == "Null"
                 or subjCode == "CIP" or (Building + Room) in studiAndLab) :
             if (Building + Room) in studiAndLab :
-                #print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
-                     # "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime,
-                      #"in", studiAndLab[Building + Room])
-                cont =  0
+                report = "Subject Name :" + subjectName + ", in building " + Building + " in room " + Room + "day " + str(weekdays) + " starts at " + str(beginTime) + " ends at " + str(endTime) + "in " + studiAndLab[Building + Room] + "\n"
+                report_file.write(report)
             else :
-                a = 0
-                #print("In Term", tearm, "Subject Name :", subjectName, "in building", Building,
-                 # "in room", Room, "day", weekdays, "starts at", beginTime, "ends at", endTime)
-    print("frsss.........", frcount)
+                report = "Subject Name : " + subjectName + " in building " + Building + " in room " + Room + "day " + str(weekdays) + " starts at " + str(beginTime) + " ends at " + str(endTime) + "\n"
+                report_file.write(report)
+
 def classroomParse(file):
 
-    '# Take Features'
+    '#Take Features'
     properties = []
     for _ in range(len(file)):
         properties.append(file["RDEF_CODE"][_])
     '# Delete dublicate features'
     unicProperties = set(properties)
-    # construct a dictionary'
-    propertyDictionary =  dict.fromkeys(unicProperties , False)
+    '# construct a dictionary'
+    propertyDictionary = dict.fromkeys(unicProperties, False)
 
     classRoompropertyDictionary = {}
     prewRoom = ""
@@ -431,11 +425,10 @@ def statistic() :
         print(len(courseList), len(m) + len(t) + len(w) + len(r) + len(f))
         print("classroom:", sumclass)
 
-def findclass(courseProps, clas, course):
+def findclass(courseProps, clas, course, requsite_class):
     #print("findclass says hi")
     for k in classroomList:
         classprops = k.getClassFeatures()
-        requsite_class = course.getclas()
         if requsite_class == "" or "FT" in requsite_class :
             if courseProps != "":
                 numerOfProps = len(courseProps)
@@ -446,9 +439,11 @@ def findclass(courseProps, clas, course):
                             #clas[classroomList.index(k)] = 1
                             count += 1
                         elif classprops[props] == False:
-                            print("Course,",course.getCrnList()[0].getSubjName(), "course Prop:", props, " does not exist in Classroom props in classromm", k.getClassName())
+                            report = "Course, " + course.getCrnList()[0].getSubjName() + " course Prop:" + props + " does not exist in Classroom props in classromm"  + k.getClassName() + "\n"
+                            report_file.write(report)
                     else:
-                        print("Course,", course.getCrnList()[0].getSubjName(), "asks for:", str(courseProps) + ". However classroom:", k.getClassName(), "doesn't have these properties.")
+                        report =  "Course, " + course.getCrnList()[0].getSubjName(), " asks for:" + str(courseProps) + ". However classroom:" + k.getClassName() + " doesn't have these properties." + "\n"
+                        report_file.write(report)
                 if count == numerOfProps:
                     clas[classroomList.index(k)] = 1
             else: #if courseprops == "Null":
@@ -477,33 +472,24 @@ def findclass2(building, room, clas):
             clas[classroomList.index(k)] = 1
     return clas
 
-
 def makeAitAndCij(term) :
-    ait, aITm, aITt, aITw, aITr, aITf = [], [], [], [], [], []
-    QI, di, dim, dit, diw, dir, dif = [], [], [], [], [], [], []
+    aITm, aITt, aITw, aITr, aITf = [], [], [], [], []
+    QI, dim, dit, diw, dir, dif = [], [], [], [], [], []
     clasRooms, classRoomName = [], []
-    cij, cijm, cijt, cijw, cijr, cijf = [], [], [], [], [], []  # course to time
-    daily_time, weekly_time = [], []
+    cijm, cijt, cijw, cijr, cijf = [], [], [], [], []  # course to time
+    daily_time = []
 
     '# Construct aIT list'
-    days = ["M", "T", "W", "R", "F"]
     hoursStart = [840, 940, 1040, 1140, 1240, 1340, 1440, 1540, 1640, 1740, 1840, 1940, 2040, 2140, 2240]
     hoursFinish = [930, 1030, 1130, 1230, 1330, 1430, 1530, 1630, 1730, 1830, 1930, 2030, 2130, 2230, 2330]
     '# Create Time array'
     for _ in range(0, 15):
         daily_time.append(0)
-    for _ in range(0, 15 * 5):
-        weekly_time.append(0)
 
     daily_time.append(0)  # crn
     daily_time.append(0)  # name
     daily_time.append(0)  # begintime
     daily_time.append(0)  # endtime
-
-    weekly_time.append(0)  # crn
-    weekly_time.append(0)  # name
-    weekly_time.append(0)  # begintime
-    weekly_time.append(0)  # endtime
 
     '# Create cIj and QI'
     for i in classroomList:
@@ -512,7 +498,7 @@ def makeAitAndCij(term) :
         QI.append(i.getClassCapacity())
     clasRooms.append(0)  # crn
     clasRooms.append(0)  # name
-    cij.append(classRoomName)
+
     cijm.append(classRoomName)
     cijt.append(classRoomName)
     cijw.append(classRoomName)
@@ -526,49 +512,26 @@ def makeAitAndCij(term) :
         CourseEnrolment = i.getTotalEnrolment()
         courseProps = i.getPROP()
 
-        new_weekly_time = weekly_time.copy()
-
-        clas_weekly = clasRooms.copy()
-        clas_weekly = findclass(courseProps, clas_weekly, i)
-        clas_weekly[-2] = i.getCrnList()[0].getcrn()
-        clas_weekly[-1] = i.getCrnList()[0].getSubjName()
-
-        # print(courseProps, type(courseProps), len(courseProps))
-
         for k in meetinglist:
 
             new_daily_time = daily_time.copy()
-            LessonDay = days.index(k.getDay())
 
             LessonEnd = hoursFinish.index(k.getEndTime())
             LessonBegin = hoursStart.index(k.getBeginTime())
 
-            startIndex = (LessonDay * 15) + (LessonBegin)
-            finishIndex = (LessonDay * 15) + (LessonEnd)
-
             new_daily_time[LessonBegin] = 1
             new_daily_time[LessonEnd] = 1
 
-            new_weekly_time[startIndex] = 1
-            new_weekly_time[finishIndex] = 1
-
             for daily in range(LessonBegin, LessonEnd):
                 new_daily_time[daily] = 1
-            for weekly in range(startIndex, finishIndex):
-                new_weekly_time[weekly] = 1
 
             new_daily_time[-4] = i.getCrnList()[0].getcrn()
             new_daily_time[-3] = i.getCrnList()[0].getSubjName()
             new_daily_time[-2] = k.getBeginTime()
             new_daily_time[-1] = k.getEndTime()
 
-            new_weekly_time[-4] = i.getCrnList()[0].getcrn()
-            new_weekly_time[-3] = i.getCrnList()[0].getSubjName()
-            new_weekly_time[-2] = k.getBeginTime()
-            new_weekly_time[-1] = k.getEndTime()
-
             clas_daily = clasRooms.copy()
-            clas_daily = findclass(courseProps, clas_daily, i)
+            clas_daily = findclass(courseProps, clas_daily, i, k.getReq_classroom())
             clas_daily[-2] = i.getCrnList()[0].getcrn()
             clas_daily[-1] = i.getCrnList()[0].getSubjName()
 
@@ -592,9 +555,6 @@ def makeAitAndCij(term) :
                 aITf.append(new_daily_time)
                 cijf.append(clas_daily)
                 dif.append(CourseEnrolment)
-        ait.append(new_weekly_time)
-        cij.append(clas_weekly)
-        di.append(CourseEnrolment)
 
     # Write them to excel file
     newaITm = pd.DataFrame(aITm)
@@ -615,18 +575,7 @@ def makeAitAndCij(term) :
     newdir = pd.DataFrame(dir)
     newdif = pd.DataFrame(dif)
 
-    newaIT = pd.DataFrame(ait)
-    newcij = pd.DataFrame(cij)
-    newdi = pd.DataFrame(di)
-
     newQI = pd.DataFrame(QI)
-
-    excelName = "Output/outputweekly" + term + ".xlsx"
-    with pd.ExcelWriter(excelName) as writer_weekly:
-        newaIT.to_excel(writer_weekly, "aIT", header=False, index=False)
-        newcij.to_excel(writer_weekly, "cij", header=False, index=False)
-        newdi.to_excel(writer_weekly, "di", header=False, index=False)
-        newQI.to_excel(writer_weekly, "QI", header=False, index=False)
 
     excelName = "Output/outputdaily" + term + ".xlsx"
     with pd.ExcelWriter(excelName) as writer:
@@ -740,111 +689,119 @@ def solutions() :
     file_location = "Data/write.xlsx"
     print("Hi, solutions")
     solutionWorkBook = xlrd.open_workbook(file_location)
+    solutions = []
 
-    solutionSheet = solutionWorkBook.sheet_by_index(0)
+    solutionSheetM = solutionWorkBook.sheet_by_name("M")
+    solutionSheetT = solutionWorkBook.sheet_by_index("T")
+    solutionSheetW = solutionWorkBook.sheet_by_index("W")
+    solutionSheetR = solutionWorkBook.sheet_by_index("R")
+    solutionSheetF = solutionWorkBook.sheet_by_index("F")
 
-    for row  in range(solutionSheet.nrows) :
-        for colum in range(solutionSheet.ncols - 1) :
-            value = int(solutionSheet.cell_value(row, colum))
-            if value == 1 :
-                CourseCRN = int(solutionSheet.cell_value(row, solutionSheet.ncols - 1))
-                course = crn2Course[CourseCRN]
+    solutions.append(solutionSheetM)
+    solutions.append(solutionSheetT)
+    solutions.append(solutionSheetW)
+    solutions.append(solutionSheetR)
+    solutions.append(solutionSheetF)
 
-                classroom = classroomList[colum]
+    for solutionSheet in solutions:
+        for row  in range(solutionSheet.nrows) :
+            for colum in range(solutionSheet.ncols - 16) :
+                value = int(solutionSheet.cell_value(row, colum))
+                if value == 1 :
+                    CourseCRN = int(solutionSheet.cell_value(row, solutionSheet.ncols - 1))
+                    course = crn2Course[CourseCRN]
+                    classroom = classroomList[colum]
 
-                for neeting in course.getMeetingList():
-                    neeting.setBuilding(classroom.getClassBuilding())
-                    neeting.setRoom(classroom.getClassRoom())
+                    for neeting in course.getMeetingList():
+                        neeting.setBuilding(classroom.getClassBuilding())
+                        neeting.setRoom(classroom.getClassRoom())
 
     print("calling ... printToExcel")
     printToExcel()
 
 def classparse_withpPandas(file) :
-    print(file.columns)
-    print("ssubj", file.loc[0])
+
+    for i in range(len(file)):
+        subjCode = file.loc[i]['Subj Code']
+        courseNumber = file.loc[i]['Crse Numb']
+        sectionNumber = file.loc[i]['Section Numb']
+        CRN = file.loc[i]['CRN']
+        Building = file.loc[i]['Building']
+        Room = file.loc[i]['Room']
+        enrolment = file.loc[i]['SSBSECT_ENRL']
+        dayM = file.loc[i]['MON']
+        dayT = file.loc[i]['TUE']
+        dayW = file.loc[i]['WED']
+        dayR = file.loc[i]['THU']
+        dayF = file.loc[i]['FRI']
+        dayS = file.loc[i]['SAT']
+        beginTime = file.loc[i]['Begin Time']
+        endTime = file.loc[i]['End Time']
+        doubleCoded = file.loc[i]['Double Coded']
+        PROP = file.loc[i]['PROP']
+        requsite_class = file.loc[i]['FORCETIMEROOM']
+
+    weekdays = [dayM, dayT, dayW, dayR, dayF, dayS]
 
 def find_missingProps():
     print("find missing props")
     count = 0
     for i in courseList:
         proplist = []
-        if i.getclas() is "FT" or i.getclas() is "" :
-            courseProps = i.getPROP()
-            meatings = i.getMeetingList()
-            for meeting in meatings:
+        courseProps = i.getPROP()
+        meatings = i.getMeetingList()
+        for meeting in meatings:
+            if meeting.getReq_classroom() is "FT" or meeting.getReq_classroom() is "":
                 for j in classroomList:
                     if meeting.getname() == j.getClassName():
                         classprops = j.getClassFeatures()
                         for prop in  courseProps:
                             if prop in classprops:
                                 if  classprops[prop] == True:
-                                   # print(i.getCrnList()[0].getSubjName(), "wants ", prop, "but, class ", j.getClassName(), "doesn't have this prop")
-                                    count += 1
+                                    # print(i.getCrnList()[0].getSubjName(), "wants ", prop, "but, class ", j.getClassName(), "doesn't have this prop")
                                     requsite_class_witmissprops.append(courseList.index(i))
                                     proplist.append(prop)
-                            else:
-                                print(i.getCrnList()[0].getSubjName(), "wants ", prop, "but, class", j.getClassName(), "'s feature list doesn't have this prop")
-    print(count)
+                                else:
+                                    count += 1
+                                    print(i.getCrnList()[0].getSubjName(), "wants ", prop, "but, class", j.getClassName(), "'s feature list doesn't have this prop")
+    print("c:",count)
     i.setPROP(proplist)
 
-
 #Main function
+def main():
+    '# For Rooms'
+    '# Read file from excel'
 
-'# For Rooms'
+    file_location = "Data/derslik_20190410.xlsx"
+    data_file = pd.read_excel(file_location)
+    classroomParse(data_file)
 
-'# Read file from excel'
-file_location = "Data/derslik_20190410.xlsx"
-data_file = pd.read_excel(file_location)
-classroomParse(data_file)
+    '#For courses'
+    file_location = "Data/dersler_20191108_v2.xlsx"
+    data_file = pd.read_excel(file_location)
 
-'#For courses'
-file_location = "Data/dersler_20191108_v2.xlsx"
-data_file = pd.read_excel(file_location)
+    '#Seperate terms'
+    term = data_file.loc[data_file["Term Code"] == 201901]
+    term = term.drop('Term Code', axis = 1)
 
-'#Seperate terms'
-term201901 = data_file.loc[data_file["Term Code"] == 201901]
-term201902 = data_file.loc[data_file["Term Code"] == 201902]
-term201901 = term201901.drop('Term Code', axis = 1)
-term201902 = term201902.drop('Term Code', axis = 1)
+    crn2Course.clear()
+    courseList.clear()
+    doubleCode2Course.clear()
+    lesseonParse(term)
+    find_missingProps()
+    makeAitAndCij("201901")
 
-'#Make excel file to csv file'
-'# header = False = Drops the header of colums'
-'# header = False = Drops the index of rows'
+    print("labs:...", len(studiAndLab))
+    print(len(courseList))
 
-#classparse(term201701)
+    #objectifFunction("201901")
+    #solutions()
 
-term201901.to_csv('term201701.csv', header = False, index = False)
-
-crn2Course.clear()
-courseList.clear()
-doubleCode2Course.clear()
-
-lesseonParse("term201701.csv", "201901")
-find_missingProps()
-makeAitAndCij("201902")
-
-print("labs:...", len(studiAndLab))
-print(len(courseList))
-
-#objectifFunction("201901")
-#solutions()
-'''
-term201702.to_csv("term201702.csv", header = False, index = False)
-crn2Course.clear()
-courseList.clear()
-doubleCode2Course.clear()
-lesseonParse("term201701.csv", "201702")
-makeAitAndCij("201702")
-objectifFunction("20702")
-
-'''
-'''
-print("Before assignment:")
-#printAll()
-#solutions()
-print("After assignment:")
-#printAll()
-#print("Printing Statistics..")
-statistic()
-'''
-print("done")
+    print("Before assignment:")
+    #printAll()
+    #solutions()
+    print("After assignment:")
+    #printAll()
+    #print("Printing Statistics..")
+    #statistic()
+    print("done")
