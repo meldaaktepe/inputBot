@@ -22,10 +22,9 @@ requsite_classdic = {}
 requsite_class_witmissprops = []
 
 report_file = open("Reports/report_file.txt", 'w')
-report_file.write("hi")
 
 '#For UI'
-'Something here'
+
 
 def createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, beginTime, endTime, doubleCoded, PROP, req_classroom) :
     # Chcek given course is exists
@@ -718,30 +717,6 @@ def solutions() :
 
     print("calling ... printToExcel")
     printToExcel()
-
-def classparse_withpPandas(file) :
-
-    for i in range(len(file)):
-        subjCode = file.loc[i]['Subj Code']
-        courseNumber = file.loc[i]['Crse Numb']
-        sectionNumber = file.loc[i]['Section Numb']
-        CRN = file.loc[i]['CRN']
-        Building = file.loc[i]['Building']
-        Room = file.loc[i]['Room']
-        enrolment = file.loc[i]['SSBSECT_ENRL']
-        dayM = file.loc[i]['MON']
-        dayT = file.loc[i]['TUE']
-        dayW = file.loc[i]['WED']
-        dayR = file.loc[i]['THU']
-        dayF = file.loc[i]['FRI']
-        dayS = file.loc[i]['SAT']
-        beginTime = file.loc[i]['Begin Time']
-        endTime = file.loc[i]['End Time']
-        doubleCoded = file.loc[i]['Double Coded']
-        PROP = file.loc[i]['PROP']
-        requsite_class = file.loc[i]['FORCETIMEROOM']
-
-    weekdays = [dayM, dayT, dayW, dayR, dayF, dayS]
 
 def find_missingProps():
     print("find missing props")
