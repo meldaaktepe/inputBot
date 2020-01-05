@@ -340,6 +340,7 @@ def printAll() :
         print("Meeting :")
         for k in meetinglist:
             print("k Meeting:", ":", k.getBuilding() , ",",k.getRoom() ,",",k.getDay() ,",",k.getBeginTime() , ",",k.getEndTime())
+        print(i.getPROP())
     #pint ClassRoomLİst
     print("ClassRoomList:")
     for i in classroomList  :
@@ -472,7 +473,11 @@ def findclass2(building, room, clas):
     return clas
 
 def makeAitAndCij(term) :
-    print("makeAit")
+    temp = out_text.get(1.0, "end")
+    temp += "\n" + "makeAitAndCij"
+    out_text.delete(1.0, "end")
+    out_text.insert(1.0, temp)
+
     aITm, aITt, aITw, aITr, aITf = [], [], [], [], []
     QI, dim, dit, diw, dir, dif = [], [], [], [], [], []
     clasRooms, classRoomName = [], []
@@ -576,7 +581,6 @@ def makeAitAndCij(term) :
     newdif = pd.DataFrame(dif)
 
     newQI = pd.DataFrame(QI)
-    print(term)
     excelName = "Output/outputdaily" + term + ".xlsx"
     with pd.ExcelWriter(excelName) as writer:
         newaITm.to_excel(writer, "aITm", header = False, index = False)
@@ -598,7 +602,10 @@ def makeAitAndCij(term) :
         newdif.to_excel(writer, "dif", header = False, index = False)
 
         newQI.to_excel(writer, "QI", header = False, index = False)
-    print("End of Make-ait amd cij")
+    temp = out_text.get(1.0, "end")
+    temp += "\n" + "End of Make-ait amd cij"
+    out_text.delete(1.0, "end")
+    out_text.insert(1.0, temp)
 
 def objectifFunction(term) :
     print(term)
@@ -629,9 +636,14 @@ def objectifFunction(term) :
     print(sumtotal, sumM, sumt, sumw, sumr, sumf)
 
 def printToExcel(cuurentterm) :
-    print("hi, PrintToExcel")
+
+    temp = out_text.get(1.0, "end")
+    temp += "\n" + "hi, PrintToExcel"
+    out_text.delete(1.0, "end")
+    out_text.insert(1.0, temp)
+
     my_workbook = xlwt.Workbook()
-    my_sheet = my_workbook.add_sheet("My Sheet",True)
+    my_sheet = my_workbook.add_sheet("Solutions",True)
 
     '#Titles'
     my_sheet.write(0, 0, "Term Code")
@@ -677,18 +689,22 @@ def printToExcel(cuurentterm) :
                 my_sheet.write(index, 14, meeting.getBeginTime())
                 my_sheet.write(index, 15, meeting.getEndTime())
                 my_sheet.write(index, 16, course.getDoubleCoded())
-
                 my_sheet.write(index, 17, ';'.join(course.getPROP()))
                 my_sheet.write(index, 18, ';'.join(meeting.getReq_classroom()))
                 index += 1
 
     my_workbook.save("solution.xls")
-    print("End Of Me!!!...")
+    temp = out_text.get(1.0, "end")
+    temp += "\n" + "End of PrintToExcel, You can find your output in solutions.xls"
+    out_text.delete(1.0, "end")
+    out_text.insert(1.0, temp)
 
 def solutions(cuurentterm) :
 
-    print("Hi, solutions")
-    opl_file_path = "outputdaily201901.xlsx"
+    temp = out_text.get(1.0, "end")
+    temp += "\n" + "Hi, solutions"
+    out_text.delete(1.0, "end")
+    out_text.insert(1.0, temp)
     solutionWorkBook = xlrd.open_workbook(opl_file_path)
 
     solutions = []
@@ -707,13 +723,11 @@ def solutions(cuurentterm) :
 
     count = 1
     for solutionSheet in solutions:
-        print("hellooo")
         for row  in range(1, solutionSheet.nrows) :
             for colum in range(solutionSheet.ncols - 16) :
                 value = int(solutionSheet.cell_value(row, colum))
                 if value == 1 :
                     CourseCRN = int(solutionSheet.cell_value(row, solutionSheet.ncols - 17))
-                    print(CourseCRN,row,colum,count)
                     course = crn2Course[CourseCRN]
                     classroom = classroomList[colum]
 
@@ -724,7 +738,6 @@ def solutions(cuurentterm) :
                                 meeting.setRoom(classroom.getClassRoom())
                         if count == 2:
                             if meeting.getDay() == "T":
-                                print("self")
                                 meeting.setBuilding(classroom.getClassBuilding())
                                 meeting.setRoom(classroom.getClassRoom())
                         if count == 3:
@@ -740,10 +753,11 @@ def solutions(cuurentterm) :
                                 meeting.setBuilding(classroom.getClassBuilding())
                                 meeting.setRoom(classroom.getClassRoom())
         count += 1
-        print("count", count)
 
-
-    print("calling ... printToExcel")
+    temp = out_text.get(1.0, "end")
+    temp += "\n" + "calling ... printToExcel"
+    out_text.delete(1.0, "end")
+    out_text.insert(1.0, temp)
     printToExcel(cuurentterm)
 
 def find_missingProps():
@@ -758,7 +772,7 @@ def find_missingProps():
                 for j in classroomList:
                     if meeting.getname() == j.getClassName():
                         classprops = j.getClassFeatures()
-                        for prop in  courseProps:
+                        for prop in courseProps:
                             if prop in classprops:
                                 if  classprops[prop] == True:
                                     requsite_class_witmissprops.append(courseList.index(i))
@@ -767,8 +781,9 @@ def find_missingProps():
                                     count += 1
                                     report = i.getCrnList()[0].getSubjName() + " wants " + prop + " but, class " + j.getClassName() + "'s feature list doesn't have this prop"
                                     report_file.write(report)
-        #report_file.write("c:",count)
-        i.setPROP(proplist)
+        proplist = list(set(proplist))
+        if proplist != []:
+            i.setPROP(proplist)
 
 '#Main function'
 def main(cuurentterm):
@@ -791,20 +806,6 @@ def main(cuurentterm):
     lesseonParse(new_term)
     find_missingProps()
     makeAitAndCij(cuurentterm)
-
-    print("labs:...", len(studiAndLab))
-    print(len(courseList))
-
-    #objectifFunction("201901")
-
-    print("Before assignment:")
-    #printAll()
-    #solutions(cuurentterm)
-    print("After assignment:")
-    #printAll()
-    #print("Printing Statistics..")
-    #statistic()
-    print("done")
 
 '#For UI'
 ui = tk.Tk()
@@ -832,8 +833,6 @@ def select_opl_file():
 def null_check():
 
     if class_file_label["text"] == "" or cource_file_label["text"] == "":
-        print("class:", class_file_label["text"])
-        print("course:", cource_file_label["text"])
         if class_file_label["text"] == "":
             out_text.insert(1.0, "please chose class File")
         else:
@@ -842,7 +841,6 @@ def null_check():
     elif class_file_label["text"] != "" and cource_file_label["text"] != "":
         global cuurentterm
         cuurentterm = term_text.get(1.0, "end")
-        print(type(cuurentterm))
         if cuurentterm.find('\n') != -1:
             cuurentterm = cuurentterm.strip('\n')
         main(cuurentterm)
@@ -856,7 +854,7 @@ def opl_check():
 canvas = tk.Canvas(ui, height=500, width=600)
 canvas.pack()
 'For class'
-class_button = tk.Button(height='2', width='17', text="Choose class file", command=select_class_file)
+class_button = tk.Button(height='2', width='17', text="Choose classroom file", command=select_class_file)
 class_button.pack()
 class_button.place(relx="0.050", rely="0.050")
 
