@@ -87,6 +87,12 @@ class meatingInfo:
     def getReq_classroom(self):
         return self.req_classroom
 
+    def setBuilding(self, building):
+        self.Building = building
+
+    def setRoom(self, room):
+        self.Room = room
+
 class classroomInfo:
     def __init__(self, building, room, des, classroomType, capacity, features):
         self.building = building

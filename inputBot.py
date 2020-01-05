@@ -1,8 +1,8 @@
 import pandas as pd
 import xlrd, xlwt
 
-#import tkinter as tk
-#from tkinter import filedialog
+import tkinter as tk
+from tkinter import filedialog
 
 from classes import courseInfo as courseInfo
 from classes import lessonInfo as lessonInfo
@@ -23,8 +23,8 @@ requsite_class_witmissprops = []
 
 report_file = open("Reports/report_file.txt", 'w')
 
-'#For UI'
-
+class_file_path, course_file_path, opl_file_path = "", "", ""
+cuurentterm = ""
 
 def createCourseList(subjectName, CRN, Building, Room, enrolment, weekdays, beginTime, endTime, doubleCoded, PROP, req_classroom) :
     # Chcek given course is exists
@@ -472,6 +472,7 @@ def findclass2(building, room, clas):
     return clas
 
 def makeAitAndCij(term) :
+    print("makeAit")
     aITm, aITt, aITw, aITr, aITf = [], [], [], [], []
     QI, dim, dit, diw, dir, dif = [], [], [], [], [], []
     clasRooms, classRoomName = [], []
@@ -575,7 +576,7 @@ def makeAitAndCij(term) :
     newdif = pd.DataFrame(dif)
 
     newQI = pd.DataFrame(QI)
-
+    print(term)
     excelName = "Output/outputdaily" + term + ".xlsx"
     with pd.ExcelWriter(excelName) as writer:
         newaITm.to_excel(writer, "aITm", header = False, index = False)
@@ -627,7 +628,7 @@ def objectifFunction(term) :
 
     print(sumtotal, sumM, sumt, sumw, sumr, sumf)
 
-def printToExcel() :
+def printToExcel(cuurentterm) :
     print("hi, PrintToExcel")
     my_workbook = xlwt.Workbook()
     my_sheet = my_workbook.add_sheet("My Sheet",True)
@@ -651,6 +652,7 @@ def printToExcel() :
     my_sheet.write(0, 15, "End Time")
     my_sheet.write(0, 16, "Double Coded")
     my_sheet.write(0, 17, "PROP")
+    my_sheet.write(0, 18, "FORCETIMEROOM")
 
     index = 1
     days = ["M", "T", "W", "R", "F"]
@@ -661,7 +663,7 @@ def printToExcel() :
             subjectnames = lesson.getSubjName().split(" - ")
             for meeting in meetinglist:
 
-                my_sheet.write(index, 0, "201701")
+                my_sheet.write(index, 0, cuurentterm)
                 my_sheet.write(index, 1, subjectnames[0])
                 my_sheet.write(index, 2, subjectnames[1])
                 my_sheet.write(index, 3, subjectnames[2])
@@ -677,24 +679,25 @@ def printToExcel() :
                 my_sheet.write(index, 16, course.getDoubleCoded())
 
                 my_sheet.write(index, 17, ';'.join(course.getPROP()))
+                my_sheet.write(index, 18, ';'.join(meeting.getReq_classroom()))
                 index += 1
 
     my_workbook.save("solution.xls")
     print("End Of Me!!!...")
 
-def solutions() :
+def solutions(cuurentterm) :
 
-    print("solutions")
-    file_location = "Data/write.xlsx"
     print("Hi, solutions")
-    solutionWorkBook = xlrd.open_workbook(file_location)
+    opl_file_path = "outputdaily201901.xlsx"
+    solutionWorkBook = xlrd.open_workbook(opl_file_path)
+
     solutions = []
 
     solutionSheetM = solutionWorkBook.sheet_by_name("M")
-    solutionSheetT = solutionWorkBook.sheet_by_index("T")
-    solutionSheetW = solutionWorkBook.sheet_by_index("W")
-    solutionSheetR = solutionWorkBook.sheet_by_index("R")
-    solutionSheetF = solutionWorkBook.sheet_by_index("F")
+    solutionSheetT = solutionWorkBook.sheet_by_name("T")
+    solutionSheetW = solutionWorkBook.sheet_by_name("W")
+    solutionSheetR = solutionWorkBook.sheet_by_name("R")
+    solutionSheetF = solutionWorkBook.sheet_by_name("F")
 
     solutions.append(solutionSheetM)
     solutions.append(solutionSheetT)
@@ -702,24 +705,49 @@ def solutions() :
     solutions.append(solutionSheetR)
     solutions.append(solutionSheetF)
 
+    count = 1
     for solutionSheet in solutions:
-        for row  in range(solutionSheet.nrows) :
+        print("hellooo")
+        for row  in range(1, solutionSheet.nrows) :
             for colum in range(solutionSheet.ncols - 16) :
                 value = int(solutionSheet.cell_value(row, colum))
                 if value == 1 :
-                    CourseCRN = int(solutionSheet.cell_value(row, solutionSheet.ncols - 1))
+                    CourseCRN = int(solutionSheet.cell_value(row, solutionSheet.ncols - 17))
+                    print(CourseCRN,row,colum,count)
                     course = crn2Course[CourseCRN]
                     classroom = classroomList[colum]
 
-                    for neeting in course.getMeetingList():
-                        neeting.setBuilding(classroom.getClassBuilding())
-                        neeting.setRoom(classroom.getClassRoom())
+                    for meeting in course.getMeetingList():
+                        if count == 1:
+                            if meeting.getDay() == "M":
+                                meeting.setBuilding(classroom.getClassBuilding())
+                                meeting.setRoom(classroom.getClassRoom())
+                        if count == 2:
+                            if meeting.getDay() == "T":
+                                print("self")
+                                meeting.setBuilding(classroom.getClassBuilding())
+                                meeting.setRoom(classroom.getClassRoom())
+                        if count == 3:
+                            if meeting.getDay() == "W":
+                                meeting.setBuilding(classroom.getClassBuilding())
+                                meeting.setRoom(classroom.getClassRoom())
+                        if count == 4:
+                            if meeting.getDay() == "R":
+                                meeting.setBuilding(classroom.getClassBuilding())
+                                meeting.setRoom(classroom.getClassRoom())
+                        if count == 5:
+                            if meeting.getDay() == "F":
+                                meeting.setBuilding(classroom.getClassBuilding())
+                                meeting.setRoom(classroom.getClassRoom())
+        count += 1
+        print("count", count)
+
 
     print("calling ... printToExcel")
-    printToExcel()
+    printToExcel(cuurentterm)
 
 def find_missingProps():
-    print("find missing props")
+    report_file.write("find missing props")
     count = 0
     for i in courseList:
         proplist = []
@@ -733,50 +761,157 @@ def find_missingProps():
                         for prop in  courseProps:
                             if prop in classprops:
                                 if  classprops[prop] == True:
-                                    # print(i.getCrnList()[0].getSubjName(), "wants ", prop, "but, class ", j.getClassName(), "doesn't have this prop")
                                     requsite_class_witmissprops.append(courseList.index(i))
                                     proplist.append(prop)
                                 else:
                                     count += 1
-                                    print(i.getCrnList()[0].getSubjName(), "wants ", prop, "but, class", j.getClassName(), "'s feature list doesn't have this prop")
-    print("c:",count)
-    i.setPROP(proplist)
+                                    report = i.getCrnList()[0].getSubjName() + " wants " + prop + " but, class " + j.getClassName() + "'s feature list doesn't have this prop"
+                                    report_file.write(report)
+        #report_file.write("c:",count)
+        i.setPROP(proplist)
 
-#Main function
-def main():
-    '# For Rooms'
-    '# Read file from excel'
+'#Main function'
+def main(cuurentterm):
+    #For Rooms
+    # Read file from excel
 
     file_location = "Data/derslik_20190410.xlsx"
     data_file = pd.read_excel(file_location)
+    #data_file = pd.read_excel(class_file_path)
     classroomParse(data_file)
 
     '#For courses'
     file_location = "Data/dersler_20191108_v2.xlsx"
     data_file = pd.read_excel(file_location)
+    #data_file = pd.read_excel(course_file_path)
 
     '#Seperate terms'
-    term = data_file.loc[data_file["Term Code"] == 201901]
-    term = term.drop('Term Code', axis = 1)
+    term = data_file.loc[data_file["Term Code"] == int(cuurentterm)]
+    new_term = term.drop('Term Code', axis = 1)
+    new_term = new_term.reset_index(drop=True)
 
     crn2Course.clear()
     courseList.clear()
     doubleCode2Course.clear()
-    lesseonParse(term)
+
+    lesseonParse(new_term)
     find_missingProps()
-    makeAitAndCij("201901")
+    makeAitAndCij(cuurentterm)
 
     print("labs:...", len(studiAndLab))
     print(len(courseList))
 
     #objectifFunction("201901")
-    #solutions()
 
     print("Before assignment:")
     #printAll()
-    #solutions()
+    #solutions(cuurentterm)
     print("After assignment:")
     #printAll()
     #print("Printing Statistics..")
     #statistic()
     print("done")
+
+'#For UI'
+ui = tk.Tk()
+ui.title("Course-Classroom Assignment")
+
+def select_class_file():
+    global class_file_path
+    class_file_path = filedialog.askopenfilename()
+    new_path = class_file_path.rfind("/")
+    new_path = class_file_path[new_path + 1 : ]
+    class_file_label["text"] = str(new_path)
+def select_course_file():
+    global course_file_path
+    course_file_path= filedialog.askopenfilename()
+    new_path = course_file_path.rfind("/")
+    new_path = course_file_path[new_path + 1:]
+    cource_file_label["text"] = str(new_path)
+def select_opl_file():
+    global opl_file_path
+    opl_file_path = filedialog.askopenfilename()
+    new_path = opl_file_path.rfind("/")
+    new_path = opl_file_path[new_path + 1:]
+    opl_label["text"] = str(new_path)
+
+def null_check():
+
+    if class_file_label["text"] == "" or cource_file_label["text"] == "":
+        print("class:", class_file_label["text"])
+        print("course:", cource_file_label["text"])
+        if class_file_label["text"] == "":
+            out_text.insert(1.0, "please chose class File")
+        else:
+            out_text.delete(1.0, "end")
+            out_text.insert(1.0, "please chose course File")
+    elif class_file_label["text"] != "" and cource_file_label["text"] != "":
+        global cuurentterm
+        cuurentterm = term_text.get(1.0, "end")
+        print(type(cuurentterm))
+        if cuurentterm.find('\n') != -1:
+            cuurentterm = cuurentterm.strip('\n')
+        main(cuurentterm)
+def opl_check():
+    if opl_label["text"] == "":
+        text = out_text.get(1.0, "end")
+        out_text.insert(len(text) + 1, "please chose opl output File")
+    else:
+        solutions(cuurentterm)
+
+canvas = tk.Canvas(ui, height=500, width=600)
+canvas.pack()
+'For class'
+class_button = tk.Button(height='2', width='17', text="Choose class file", command=select_class_file)
+class_button.pack()
+class_button.place(relx="0.050", rely="0.050")
+
+class_file_label = tk.Label(height='2', width='25', bg='white', font=("Times New Roman", "8"))
+class_file_label.pack()
+class_file_label.place(relx="0.30", rely="0.055")
+
+'For cource'
+course_button = tk.Button(height='2', width='17', text="Choose course file", command=select_course_file)
+course_button.pack()
+course_button.place(relx="0.050", rely="0.15")
+
+cource_file_label = tk.Label(height='2', width='25', bg='white', font=("Times New Roman", "8"))
+cource_file_label.pack()
+cource_file_label.place(relx="0.30", rely="0.15")
+
+'For importing opl'
+opl_button = tk.Button(height='2', width='17', text="Import Solutions", command=select_opl_file)
+opl_button.pack()
+opl_button.place(relx="0.050", rely="0.25")
+
+opl_label = tk.Label(height='2', width='25', bg='white', font=("Times New Roman", "8"))
+opl_label.pack()
+opl_label.place(relx="0.30", rely="0.25")
+
+'For term'
+Choose_term_label = tk.Label(height='2', width='10', text="Choose term", font=("Times New Roman", "10"))
+Choose_term_label.pack()
+Choose_term_label.place(relx="0.6", rely="0.050")
+
+term_text = tk.Text(height='1', width='10')
+term_text.pack()
+term_text.place(relx='0.75', rely='0.050')
+
+'For assignment'
+assign_button = tk.Button(height='2', width='24', text="Assign", command=null_check)
+assign_button.pack()
+assign_button.place(relx="0.6", rely="0.15")
+
+'For solutions'
+solutions_button = tk.Button(height='2', width='24', text="Print Solutions", command=opl_check)
+solutions_button.pack()
+solutions_button.place(relx="0.6", rely="0.25")
+
+'For out text'
+out_text = tk.Text(height = '15', width = '64', bg ='white')
+out_text.pack()
+out_text.place(relx='0.050', rely='0.4')
+
+ui.resizable(False, False)
+
+ui.mainloop()
