@@ -772,18 +772,12 @@ def find_missingProps():
 
 '#Main function'
 def main(cuurentterm):
-    #For Rooms
-    # Read file from excel
-
-    file_location = "Data/derslik_20190410.xlsx"
-    data_file = pd.read_excel(file_location)
-    #data_file = pd.read_excel(class_file_path)
+    '#For Rooms'
+    data_file = pd.read_excel(class_file_path)
     classroomParse(data_file)
 
     '#For courses'
-    file_location = "Data/dersler_20191108_v2.xlsx"
-    data_file = pd.read_excel(file_location)
-    #data_file = pd.read_excel(course_file_path)
+    data_file = pd.read_excel(course_file_path)
 
     '#Seperate terms'
     term = data_file.loc[data_file["Term Code"] == int(cuurentterm)]
